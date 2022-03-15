@@ -17,4 +17,14 @@ public class U {
         print(str);
         System.out.println();
     }
+
+    public static void sleep(int ms) {
+        try{
+            Thread.sleep(ms);
+        }
+        catch (InterruptedException e){
+
+        }
+    }
+
 }

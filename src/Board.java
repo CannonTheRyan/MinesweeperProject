@@ -20,10 +20,22 @@ public class Board {
             board = new String[12][12];
             displayedBoard = new String[12][12];
         }
-        else if (difficulty.equals("Expert"))
+        else if (difficulty.equalsIgnoreCase("Expert"))
         {
             board = new String[16][16];
             displayedBoard = new String[16][16];
+        }
+        else if (difficulty.equalsIgnoreCase("Tutorial"))
+        {
+            board = new String[3][3];
+            displayedBoard = new String[3][3];
+        }
+        for (int i = 0; i < board.length; i++)
+        {
+            for (int j = 0; j < displayedBoard[0].length; j++)
+            {
+                displayedBoard[i][j] = "?";
+            }
         }
         guessedIndexes = new ArrayList<String>();
         flaggedIndexes = new ArrayList<String>();
