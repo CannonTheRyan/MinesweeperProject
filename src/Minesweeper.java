@@ -1,8 +1,11 @@
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Arrays;
 
 public class Minesweeper {
 
     private Scanner scan;
+    private Board board;
 
     public Minesweeper()
     {
@@ -19,13 +22,13 @@ public class Minesweeper {
 //        {
 //            System.out.println();
 //            U.println("To choose a spot to uncover, input the row it is in, followed by a space, followed by the column it is in.");
-//            U.println("To choose a spot to flag, type F, followed by a space, followed by the row it is in, followed by a space, followed by the column it is in.");
+//            U.println("To choose a spot to flag OR unflag, type F, followed by a space, followed by the row it is in, followed by a space, followed by the column it is in.");
 //            U.println("For example: if the board is ");
 //            System.out.println();
 //            exampleBoard.displayBoard();
 //            System.out.println();
 //            U.println("To choose the most bottom left spot, you would input \"3 1\" without the quotation marks.");
-//            U.println("If you would like to flag the bottom left spot, you would input \"F 3 1\" without the quotation marks.");
+//            U.println("If you would like to flag/unflag the bottom left spot, you would input \"F 3 1\" without the quotation marks.");
 //            U.sleep(2000);
 //            System.out.println("Legend: ");
 //            System.out.println("?: Squares you have not uncovered");
@@ -66,7 +69,7 @@ public class Minesweeper {
             }
         }
 
-        Board board = new Board(difficulty);
+        board = new Board(difficulty);
         System.out.println();
 
         boolean gameOver = false;
@@ -75,8 +78,51 @@ public class Minesweeper {
         {
             board.displayBoard();
             System.out.println();
-            U.print("Pick a spot to uncover or to flag");
+            U.print("Pick a spot to uncover or to flag: ");
             String index = scan.nextLine();
+
+        }
+    }
+
+    private boolean checkWin()
+    {
+        return (board.getMineIndexes().containsAll(board.getFlaggedIndexes()) && board.getFlaggedIndexes().containsAll(board.getMineIndexes()));
+    }
+
+    private boolean processOption(String index)
+    {
+        if (index.substring(0, 1).equalsIgnoreCase("F"))
+        {
+            String[] arr = index.split(" ");
+            int row = Integer.parseInt(arr[1]);
+            int col = Integer.parseInt(arr[2]);
+            if (row > board.getSize() || col > board.getSize() || row < 1 || col < 1)
+            {
+                return false;
+            }
+            board.setDisplayedBoard(row-1, col-1, "F");
+            board.getFlaggedIndexes().add("" + row + " " + col);
+        }
+        else
+        {
+            String[] arr = index.split(" ");
+            int row = Integer.parseInt(arr[0]);
+            int col = Integer.parseInt(arr[1]);
+            if (row > board.getSize() || col > board.getSize() || row < 1 || col < 1)
+            {
+                return false;
+            }
+            revealSpace(row, col); // minesweeper indexes not array indexes
+        }
+        return true;
+    }
+
+    private void revealSpace(int row, int col)
+    {
+        board.setDisplayedBoard(row-1, col-1, board.getBoard()[row-1][col-1]);
+        if (board.getBoard()[row-1][col-1].equals("M"))
+        {
+            System.out.println("YOU LOST LMFAO");
         }
     }
 }

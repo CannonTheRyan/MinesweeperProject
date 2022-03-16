@@ -1,9 +1,10 @@
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
 
 public class Board {
     private String[][] board;
     private String[][] displayedBoard;
+    private int size;
     private ArrayList<String> guessedIndexes;
     private ArrayList<String> flaggedIndexes;
     private ArrayList<String> mineIndexes;
@@ -37,6 +38,7 @@ public class Board {
                 displayedBoard[i][j] = "?";
             }
         }
+        size = board.length;
         guessedIndexes = new ArrayList<String>();
         flaggedIndexes = new ArrayList<String>();
         mineIndexes = new ArrayList<String>();
@@ -78,6 +80,31 @@ public class Board {
             }
             System.out.println();
         }
+    }
+
+    public void setDisplayedBoard(int row, int col, String str)
+    {
+        displayedBoard[row][col] = str;
+    }
+
+    public int getSize()
+    {
+        return size;
+    }
+
+    public String[][] getBoard()
+    {
+        return board;
+    }
+
+    public ArrayList<String> getFlaggedIndexes()
+    {
+        return flaggedIndexes;
+    }
+
+    public ArrayList<String> getMineIndexes()
+    {
+        return mineIndexes;
     }
 
 }
