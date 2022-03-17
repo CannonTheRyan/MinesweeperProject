@@ -73,13 +73,33 @@ public class Minesweeper {
         System.out.println();
 
         boolean gameOver = false;
+        boolean firstTry = true;
 
         while (!gameOver)
         {
-            board.displayBoard();
-            System.out.println();
-            U.print("Pick a spot to uncover or to flag: ");
-            String index = scan.nextLine();
+            boolean tf = true;
+            if (tf)
+            {
+                board.displayBoard();
+                System.out.println();
+                U.print("Pick a spot to uncover or to flag: ");
+                String index = scan.nextLine();
+                if (firstTry && isIndexValid(index))
+                {
+                    firstTry = false;
+                    board.setBoard(index)
+                }
+                else if (!isIndexValid(index))
+                {
+                    System.out.println("That is not a valid index! Try again!");
+                }
+                else
+                {
+                    processOption(index);
+                    tf = false;
+                }
+            }
+
 
         }
     }
@@ -89,40 +109,39 @@ public class Minesweeper {
         return (board.getMineIndexes().containsAll(board.getFlaggedIndexes()) && board.getFlaggedIndexes().containsAll(board.getMineIndexes()));
     }
 
-    private boolean processOption(String index)
+    private boolean isIndexValid(String index)
     {
+        String[] arr = index.split(" ");
+        int row;
+        int col;
         if (index.substring(0, 1).equalsIgnoreCase("F"))
         {
-            String[] arr = index.split(" ");
+            row = Integer.parseInt(arr[1]);
+            col = Integer.parseInt(arr[2]);
+        }
+        else
+        {
+            row = Integer.parseInt(arr[0]);
+            col = Integer.parseInt(arr[1]);
+        }
+        return row <= board.getSize() && col <= board.getSize() && row >= 1 && col >= 1;
+    }
+
+    private void processOption(String index)
+    {
+        String[] arr = index.split(" ");
+        if (index.substring(0, 1).equalsIgnoreCase("F"))
+        {
             int row = Integer.parseInt(arr[1]);
             int col = Integer.parseInt(arr[2]);
-            if (row > board.getSize() || col > board.getSize() || row < 1 || col < 1)
-            {
-                return false;
-            }
             board.setDisplayedBoard(row-1, col-1, "F");
             board.getFlaggedIndexes().add("" + row + " " + col);
         }
         else
         {
-            String[] arr = index.split(" ");
             int row = Integer.parseInt(arr[0]);
             int col = Integer.parseInt(arr[1]);
-            if (row > board.getSize() || col > board.getSize() || row < 1 || col < 1)
-            {
-                return false;
-            }
-            revealSpace(row, col); // minesweeper indexes not array indexes
-        }
-        return true;
-    }
-
-    private void revealSpace(int row, int col)
-    {
-        board.setDisplayedBoard(row-1, col-1, board.getBoard()[row-1][col-1]);
-        if (board.getBoard()[row-1][col-1].equals("M"))
-        {
-            System.out.println("YOU LOST LMFAO");
+            board.setDisplayedBoard(row-1, col-1, board.getBoard()[row-1][col-1]);
         }
     }
 }

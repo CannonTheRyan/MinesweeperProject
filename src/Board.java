@@ -82,6 +82,11 @@ public class Board {
         }
     }
 
+    public void setBoard(String index)
+    {
+        
+    }
+
     public void setDisplayedBoard(int row, int col, String str)
     {
         displayedBoard[row][col] = str;
