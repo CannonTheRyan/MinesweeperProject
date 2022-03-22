@@ -5,9 +5,10 @@ public class Board {
     private String[][] board;
     private String[][] displayedBoard;
     private int size;
-    private ArrayList<String> guessedIndexes;
-    private ArrayList<String> flaggedIndexes;
-    private ArrayList<String> mineIndexes;
+    private int mines;
+    private ArrayList<Index> guessedIndexes;
+    private ArrayList<Index> flaggedIndexes;
+    private ArrayList<Index> mineIndexes;
 
     public Board(String difficulty)
     {
@@ -15,16 +16,19 @@ public class Board {
         {
             board = new String[8][8];
             displayedBoard = new String[8][8];
+            mines = 10;
         }
         else if (difficulty.equalsIgnoreCase("Intermediate"))
         {
             board = new String[12][12];
             displayedBoard = new String[12][12];
+            mines = 22;
         }
         else if (difficulty.equalsIgnoreCase("Expert"))
         {
             board = new String[16][16];
             displayedBoard = new String[16][16];
+            mines = 40;
         }
         else if (difficulty.equalsIgnoreCase("Tutorial"))
         {
@@ -39,9 +43,9 @@ public class Board {
             }
         }
         size = board.length;
-        guessedIndexes = new ArrayList<String>();
-        flaggedIndexes = new ArrayList<String>();
-        mineIndexes = new ArrayList<String>();
+        guessedIndexes = new ArrayList<Index>();
+        flaggedIndexes = new ArrayList<Index>();
+        mineIndexes = new ArrayList<Index>();
     }
 
     public void displayBoard()
@@ -82,9 +86,59 @@ public class Board {
         }
     }
 
-    public void setBoard(String index)
+    public void setBoard(Index index)
     {
-        
+        int usedRow = index.getRow();
+        int usedCol = index.getCol();
+        int placedMines = 0;
+        while (placedMines < mines)
+        {
+            int row = U.random(0, size-1);
+            int col = U.random(0, size-1);
+            Index tempIndex = new Index("" + row + " " + col);
+            boolean alreadyAMine = false;
+            for (Index ind : mineIndexes)
+            {
+                if ((ind.getRow() == row && ind.getCol() == col) || (ind.getRow() == usedRow && ind.getCol() == usedCol))
+                {
+                    alreadyAMine = true;
+                }
+            }
+            if (!alreadyAMine)
+            {
+                mineIndexes.add(tempIndex);
+                board[row][col] = "M";
+                placedMines++;
+            }
+        }
+        for (int row = 0; row < size; row++)
+        {
+            for (int col = 0; col < size; col++)
+            {
+                int amountOfMines = 0;
+                if (board[row][col].equals(null))
+                {
+                    if (board[row-1][col-1].equals("M") && row-1 > 0 && row-1 < size && col-1 > 0 && col-1 < size) //idk if logic is right
+                    {amountOfMines++;}
+                    if (board[row-1][col].equals("M"))
+                    {amountOfMines++;}
+                    if (board[row-1][col+1].equals("M"))
+                    {amountOfMines++;}
+                    if (board[row][col-1].equals("M"))
+                    {amountOfMines++;}
+                    if (board[row][col+1].equals("M"))
+                    {amountOfMines++;}
+                    if (board[row+1][col-1].equals("M"))
+                    {amountOfMines++;}
+                    if (board[row+1][col].equals("M"))
+                    {amountOfMines++;}
+                    if (board[row+1][col+1].equals("M"))
+                    {amountOfMines++;}
+                    board[row][col] = "" + amountOfMines;
+                }
+
+            }
+        }
     }
 
     public void setDisplayedBoard(int row, int col, String str)
@@ -102,14 +156,30 @@ public class Board {
         return board;
     }
 
-    public ArrayList<String> getFlaggedIndexes()
+    public ArrayList<Index> getFlaggedIndexes()
     {
         return flaggedIndexes;
     }
 
-    public ArrayList<String> getMineIndexes()
+    public ArrayList<Index> getMineIndexes()
     {
         return mineIndexes;
     }
+
+    public ArrayList<Index> getGuessedIndexes()
+    {
+        return guessedIndexes;
+    }
+
+    public void addFlaggedIndexes(Index index)
+    {
+        flaggedIndexes.add(index);
+    }
+
+    public void addGuessedIndexes(Index index)
+    {
+        guessedIndexes.add(index);
+    }
+
 
 }

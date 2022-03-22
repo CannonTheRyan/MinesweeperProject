@@ -73,32 +73,45 @@ public class Minesweeper {
         System.out.println();
 
         boolean gameOver = false;
-        boolean firstTry = true;
+        String tempIndex;
+
+        while (true)
+        {
+            board.displayBoard();
+            System.out.println();
+            U.println("Pick a spot to uncover: ");
+            tempIndex = scan.nextLine();
+            if (isIndexValid(tempIndex))
+            {
+                break;
+            }
+            U.println("That is not a valid index!");
+        }
+        Index firstIndex = new Index(tempIndex);
+        board.addGuessedIndexes(firstIndex);
+        board.setBoard(firstIndex);
 
         while (!gameOver)
         {
-            boolean tf = true;
-            if (tf)
-            {
-                board.displayBoard();
-                System.out.println();
-                U.print("Pick a spot to uncover or to flag: ");
-                String index = scan.nextLine();
-                if (firstTry && isIndexValid(index))
-                {
-                    firstTry = false;
-                    board.setBoard(index)
-                }
-                else if (!isIndexValid(index))
-                {
-                    System.out.println("That is not a valid index! Try again!");
-                }
-                else
-                {
-                    processOption(index);
-                    tf = false;
-                }
-            }
+
+//                board.displayBoard();
+//                System.out.println();
+//                U.print("Pick a spot to uncover or to flag: ");
+//                String index = scan.nextLine();
+//                if (firstTry && isIndexValid(index))
+//                {
+//                    firstTry = false;
+//                    board.setBoard(index);
+//                }
+//                else if (!isIndexValid(index))
+//                {
+//                    System.out.println("That is not a valid index! Try again!");
+//                }
+//                else
+//                {
+//                    processOption(index);
+//                }
+
 
 
         }
@@ -127,21 +140,8 @@ public class Minesweeper {
         return row <= board.getSize() && col <= board.getSize() && row >= 1 && col >= 1;
     }
 
-    private void processOption(String index)
+    public Board getBoard()
     {
-        String[] arr = index.split(" ");
-        if (index.substring(0, 1).equalsIgnoreCase("F"))
-        {
-            int row = Integer.parseInt(arr[1]);
-            int col = Integer.parseInt(arr[2]);
-            board.setDisplayedBoard(row-1, col-1, "F");
-            board.getFlaggedIndexes().add("" + row + " " + col);
-        }
-        else
-        {
-            int row = Integer.parseInt(arr[0]);
-            int col = Integer.parseInt(arr[1]);
-            board.setDisplayedBoard(row-1, col-1, board.getBoard()[row-1][col-1]);
-        }
+        return board;
     }
 }
