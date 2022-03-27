@@ -1,15 +1,32 @@
-
 import java.util.ArrayList;
 
+/**
+ * This class represents the minesweeper board
+ *
+ * @author Ryan Wong
+ */
 public class Board {
+
+    /** A 2D array of the answer board */
     private String[][] board;
+    /** A 2d array of the board the player sees */
     private String[][] displayedBoard;
+    /** The length/width of the board */
     private int size;
+    /** The amount of mines on the board */
     private int mines;
+    /** A list of the indexes of player guesses */
     private ArrayList<Index> guessedIndexes;
+    /** A list of the indexes of player flags */
     private ArrayList<Index> flaggedIndexes;
+    /** A list of the indexes of mines on the board */
     private ArrayList<Index> mineIndexes;
 
+    /**
+     * Constructs a Board object and initializes the board, displayedBoard, mines, size, guessedIndexes, flaggedIndexes, and mineIndexes based on the difficulty
+     *
+     * @param difficulty The difficulty of the game (Beginner, Intermediate, Expert)
+     */
     public Board(String difficulty)
     {
         if (difficulty.equalsIgnoreCase("Beginner"))
@@ -40,6 +57,7 @@ public class Board {
             for (int j = 0; j < displayedBoard[0].length; j++)
             {
                 displayedBoard[i][j] = "?";
+                board[i][j] = " ";
             }
         }
         size = board.length;
@@ -48,6 +66,7 @@ public class Board {
         mineIndexes = new ArrayList<Index>();
     }
 
+    /** Displays the displayedBoard with indexes on the side */
     public void displayBoard()
     {
         System.out.print("X |");
@@ -86,6 +105,11 @@ public class Board {
         }
     }
 
+    /**
+     * Sets the mines and the numbers corresponding to the amount of mines nearby on the board after the player has made their first turn
+     *
+     * @param index The first index the player has inputted to not place a mine there
+     */
     public void setBoard(Index index)
     {
         int usedRow = index.getRow();
@@ -93,13 +117,13 @@ public class Board {
         int placedMines = 0;
         while (placedMines < mines)
         {
-            int row = U.random(0, size-1);
-            int col = U.random(0, size-1);
+            int row = U.random(1, size);
+            int col = U.random(1, size);
             Index tempIndex = new Index("" + row + " " + col);
             boolean alreadyAMine = false;
             for (Index ind : mineIndexes)
             {
-                if ((ind.getRow() == row && ind.getCol() == col) || (ind.getRow() == usedRow && ind.getCol() == usedCol))
+                if ((ind.getRow() == tempIndex.getRow() && ind.getCol() == tempIndex.getCol()) || (usedRow == tempIndex.getRow() && usedCol == tempIndex.getCol()))
                 {
                     alreadyAMine = true;
                 }
@@ -107,7 +131,7 @@ public class Board {
             if (!alreadyAMine)
             {
                 mineIndexes.add(tempIndex);
-                board[row][col] = "M";
+                board[row-1][col-1] = "M";
                 placedMines++;
             }
         }
@@ -116,70 +140,162 @@ public class Board {
             for (int col = 0; col < size; col++)
             {
                 int amountOfMines = 0;
-                if (board[row][col].equals(null))
+                if (!board[row][col].equals("M"))
                 {
-                    if (board[row-1][col-1].equals("M") && row-1 > 0 && row-1 < size && col-1 > 0 && col-1 < size) //idk if logic is right
-                    {amountOfMines++;}
-                    if (board[row-1][col].equals("M"))
-                    {amountOfMines++;}
-                    if (board[row-1][col+1].equals("M"))
-                    {amountOfMines++;}
-                    if (board[row][col-1].equals("M"))
-                    {amountOfMines++;}
-                    if (board[row][col+1].equals("M"))
-                    {amountOfMines++;}
-                    if (board[row+1][col-1].equals("M"))
-                    {amountOfMines++;}
-                    if (board[row+1][col].equals("M"))
-                    {amountOfMines++;}
-                    if (board[row+1][col+1].equals("M"))
-                    {amountOfMines++;}
+                    if (isIndexValid(row-1, col-1)) {
+                        if (board[row - 1][col - 1].equals("M")) {
+                            amountOfMines++;
+                        }
+                    }
+                    if (isIndexValid(row-1, col)) {
+                        if (board[row - 1][col].equals("M")) {
+                            amountOfMines++;
+                        }
+                    }
+                    if (isIndexValid(row-1, col+1)) {
+                        if (board[row - 1][col + 1].equals("M")) {
+                            amountOfMines++;
+                        }
+                    }
+                    if (isIndexValid(row, col-1)) {
+                        if (board[row][col - 1].equals("M")) {
+                            amountOfMines++;
+                        }
+                    }
+                    if (isIndexValid(row, col+1)) {
+                        if (board[row][col + 1].equals("M")) {
+                            amountOfMines++;
+                        }
+                    }
+                    if (isIndexValid(row+1, col-1)) {
+                        if (board[row + 1][col - 1].equals("M")) {
+                            amountOfMines++;
+                        }
+                    }
+                    if (isIndexValid(row+1, col)) {
+                        if (board[row + 1][col].equals("M")) {
+                            amountOfMines++;
+                        }
+                    }
+                    if (isIndexValid(row+1, col+1)) {
+                        if (board[row + 1][col + 1].equals("M")) {
+                            amountOfMines++;
+                        }
+                    }
                     board[row][col] = "" + amountOfMines;
                 }
-
             }
         }
     }
 
-    public void setDisplayedBoard(int row, int col, String str)
+    /**
+     * Reveals an index on displayedBoard to a number or sets it to a flag
+     *
+     * @param index The index on the board to set
+     */
+    public void setDisplayedBoard(Index index)
     {
-        displayedBoard[row][col] = str;
+        if (index.isFlag())
+        {
+            displayedBoard[index.getRow()][index.getCol()] = "F";
+        }
+        else
+        {
+            displayedBoard[index.getRow()][index.getCol()] = board[index.getRow()][index.getCol()];
+        }
     }
 
-    public int getSize()
+    /**
+     *  Used only when unflagging an index
+     *
+     * @param row The row of the index
+     * @param col The column of the index
+     */
+    public void setDisplayedBoard(int row, int col)
     {
-        return size;
+        displayedBoard[row][col] = "?";
     }
 
-    public String[][] getBoard()
+    /**
+     * Checks if the row and column in an index inputted go out of bounds of the board
+     *
+     * @param row The row of the index
+     * @param col The column of the index
+     *
+     * @return True if in bounds, false if out of bounds
+     */
+    private boolean isIndexValid(int row, int col)
     {
-        return board;
+        return row >= 0 && row <= size-1 && col >= 0 && col <= size-1;
     }
 
-    public ArrayList<Index> getFlaggedIndexes()
-    {
-        return flaggedIndexes;
-    }
-
-    public ArrayList<Index> getMineIndexes()
-    {
-        return mineIndexes;
-    }
-
-    public ArrayList<Index> getGuessedIndexes()
-    {
-        return guessedIndexes;
-    }
-
+    /**
+     * Adds an index to the flaggedIndexes list
+     *
+     * @param index The index being added
+     */
     public void addFlaggedIndexes(Index index)
     {
         flaggedIndexes.add(index);
     }
 
+    /**
+     * Adds an index to the guessedIndexes list
+     *
+     * @param index The index being added
+     */
     public void addGuessedIndexes(Index index)
     {
         guessedIndexes.add(index);
     }
 
+    /**
+     * Removes an index in the flaggedIndexes list
+     *
+     * @param index The index being removed
+     */
+    public void removeFlaggedIndex(int index)
+    {
+        flaggedIndexes.remove(index);
+    }
 
+    /**
+     * Getter method for the size
+     *
+     * @return size
+     */
+    public int getSize()
+    {
+        return size;
+    }
+
+    /**
+     * Getter method for the flaggedIndexes list
+     *
+     * @return flaggedIndexes
+     */
+    public ArrayList<Index> getFlaggedIndexes()
+    {
+        return flaggedIndexes;
+    }
+
+    /**
+     * Getter method for the mineIndexes list
+     *
+     * @return mineIndexes
+     */
+    public ArrayList<Index> getMineIndexes()
+    {
+        return mineIndexes;
+    }
+
+    /**
+     * Getter method for the guessedIndexes list
+     *
+     * @return guessedIndexes
+     */
+    public ArrayList<Index> getGuessedIndexes()
+    {
+        return guessedIndexes;
+    }
 }
